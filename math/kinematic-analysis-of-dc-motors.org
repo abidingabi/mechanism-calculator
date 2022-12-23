@@ -185,21 +185,32 @@ mr^2&=I \\
 \end{aligned}
 \end{equation}
 
-Therefore, a linear force acting on something with a mass $m$ at a radius $r$ has a moment of inertia of $mr^2$. Assuming that the load torque is also at the same radius, it can be represented as $F_{load}r$. Substituting this into the previously derived linear velocity/position functions:
+Therefore, a linear force acting on something with a mass $m$ at a radius $r$ has a moment of inertia of $mr^2$. Assuming that the load torque is also at the same radius, it can be represented as $F_{load}r$. Substituting this, along with $\omega_i=\frac{v_i}{r}$ and $\theta_i=\frac{x_i}{r}$ into the previously derived linear velocity/position functions:
 
 #+begin_src python
-mass = sym.symbols('m')
+mass, initial_linear_velocity, initial_linear_position = sym.symbols('m v_i x_i')
+
+simplified_linear_velocity_function = sym.simplify(
+    linear_velocity_function
+        .subs(moment_of_inertia, mass*radius**2)
+        .subs(initial_angular_velocity, initial_linear_velocity/radius))
+
+simplified_linear_position_function = sym.simplify(
+    linear_position_function
+        .subs(moment_of_inertia, mass*radius**2)
+        .subs(initial_angular_velocity, initial_linear_velocity/radius)
+        .subs(initial_angular_position, initial_linear_position/radius))
 
 format_equations(
-    linear_velocity_function.subs(moment_of_inertia, mass*radius**2),
-    linear_position_function.subs(moment_of_inertia, mass*radius**2)
+    simplified_linear_velocity_function,
+    simplified_linear_position_function
 )
 #+end_src
 
 #+RESULTS:
 :results:
 \begin{equation}\begin{aligned}
-v{\left(t \right)} &= r \left(- \frac{\omega_{free} \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \omega_{free} - \omega_{free} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}} + \omega_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}\right)\\
-x{\left(t \right)} &= r \left(\frac{m \omega_{free}^{2} r^{2} \tau_{load}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{2} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{2}}{\tau_{stall}} + \frac{m \omega_{free}^{2} r^{2} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \frac{m \omega_{free} \omega_{i} r^{2}}{\tau_{stall}} - \frac{m \omega_{free} \omega_{i} r^{2} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} - \frac{\omega_{free} t \tau_{load}}{\tau_{stall}} + \omega_{free} t + \theta_{i}\right)
+v{\left(t \right)} &= - \frac{\omega_{free} r \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} r \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \omega_{free} r - \omega_{free} r e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}} + v_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}\\
+x{\left(t \right)} &= \frac{m \omega_{free}^{2} r^{3} \tau_{load}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{3} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{3}}{\tau_{stall}} + \frac{m \omega_{free}^{2} r^{3} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \frac{m \omega_{free} r^{2} v_{i}}{\tau_{stall}} - \frac{m \omega_{free} r^{2} v_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} - \frac{\omega_{free} r t \tau_{load}}{\tau_{stall}} + \omega_{free} r t + x_{i}
 \end{aligned}\end{equation}
 :end:
