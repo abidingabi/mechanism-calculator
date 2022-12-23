@@ -23,5 +23,5 @@ export function quantity(motor: Motor, quantity: number): Motor {
   return {
     ...motor,
     stallTorque: motor.stallTorque * quantity,
-  }
+  };
 }

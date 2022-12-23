@@ -1,0 +1,26 @@
+{
+  "name": "mechanism-calculator",
+  "version": "0.0.1",
+  "author": "Abigail <abigail@dogbuilt.net>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write src"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.0.0",
+    "@tsconfig/svelte": "^3.0.0",
+    "prettier": "^2.8.1",
+    "prettier-plugin-svelte": "^2.7.0",
+    "svelte": "^3.54.0",
+    "svelte-check": "^2.10.0",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0"
+  }
+}

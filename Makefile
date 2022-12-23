@@ -1,10 +1,13 @@
-all: out/math generated/
+all: site dist/math generated/
 
-out/math: math/*.org
-	mkdir -p out/math
-	emacs math/*.org -Q --batch -f org-html-export-to-html --kill
-	mv math/*.html out/math
+site: generated/
+	npm run build
 
-generated/: out/math
+generated/: dist/math
 	mkdir -p src/generated/
 	emacs math/*.org -Q --batch -f org-babel-tangle --kill
+
+dist/math: math/*.org
+	mkdir -p dist/math
+	emacs math/*.org -Q --batch -f org-html-export-to-html --kill
+	mv math/*.html dist/math

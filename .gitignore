@@ -1,5 +1,6 @@
 .DS_Store
 env/
-out/
+dist/
 src/generated/
 .envrc
+node_modules
