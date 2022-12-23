@@ -1,4 +1,4 @@
-#+title: Kinematic Analysis of DC Motors
+#+title: Kinematic Analysis of DC Motors under Constant Load
 #+author: Abigail
 #+options: toc:nil date:nil
 
@@ -6,8 +6,8 @@
 * Angular velocity as a function of time
 In order to determine how a mechanism behave, it is first necessary to determine how a motor behaves. The thing that is generally useful for a mechanism is to figure out when it gets to a certain position---for that, it must be known when it gets to a certain position.
 
-#+begin_src python :session :results none :exports none
-# import sympy, create utility functions
+#+begin_src python :results none :exports none
+# import sympy, create output utility functions
 import sympy as sym
 
 def format_equations(*exprs):
@@ -20,6 +20,15 @@ def format_equations(*exprs):
         + r"\end{aligned}"
         + r"\end{equation}"
         )
+
+def make_ts_function_from_expr(filename, name, expr):
+    return (f"#+begin_src typescript :eval never :tangle {filename}\n"
+            + f"function {name}("
+            + ", ".join(sorted([str(s)+": number" for s in expr.free_symbols]))
+            + "): number {\n"
+            + "  return " + sym.printing.jscode(expr) + ";\n"
+            + "}\n"
+            + "#+end_src\n")
 #+end_src
 
 When a motor runs between stall torque (stall torque) and free speed (0 torque), the torque changes linearly with the speed:
@@ -104,6 +113,23 @@ format_equations(
 \end{aligned}\end{equation}
 :end:
 
+
+#+begin_src python :exports none :results drawer
+make_ts_function_from_expr(
+    "../generated/constant-load.ts",
+    "angularVelocity",
+    angular_velocity_function.rhs)
+#+end_src
+
+#+RESULTS:
+:results:
+#+begin_src typescript :eval never :tangle ../generated/constant-load.ts
+function angularVelocity(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number): number {
+  return -omega_free*tau_load/tau_stall + omega_free*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + omega_free - omega_free*Math.exp(-t*tau_stall/(I*omega_free)) + omega_i*Math.exp(-t*tau_stall/(I*omega_free));
+}
+#+end_src
+:end:
+
 ** Angle as a function of time
 While angular velocity as a function of time is directly useful for a couple mechanisms (e.g. flywheels, intakes), most of the time the cumulative angle is more important.
 
@@ -124,6 +150,23 @@ format_equations(angular_position_function)
 \theta{\left(t \right)} &= \frac{I \omega_{free}^{2} \tau_{load}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2}}{\tau_{stall}} + \frac{I \omega_{free}^{2} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \frac{I \omega_{free} \omega_{i}}{\tau_{stall}} - \frac{I \omega_{free} \omega_{i} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} - \frac{\omega_{free} t \tau_{load}}{\tau_{stall}} + \omega_{free} t + \theta_{i}
 \end{aligned}\end{equation}
 :end:
+
+#+begin_src python :exports none
+make_ts_function_from_expr(
+    "../generated/constant-load.ts",
+    "angularPosition",
+    angular_position_function.rhs)
+#+end_src
+
+#+RESULTS:
+:results:
+#+begin_src typescript :eval never :tangle ../generated/constant-load.ts
+function angularPosition(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number, theta_i: number): number {
+  return I*Math.pow(omega_free, 2)*tau_load/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)/tau_stall + I*Math.pow(omega_free, 2)*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + I*omega_free*omega_i/tau_stall - I*omega_free*omega_i*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall - omega_free*t*tau_load/tau_stall + omega_free*t + theta_i;
+}
+#+end_src
+:end:
+
 * Linear loads
 Linear mechanisms are useful in addition to angular ones---e.g., linear slides or a drivetrain.
 
