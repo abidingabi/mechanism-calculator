@@ -116,14 +116,14 @@ format_equations(
 
 #+begin_src python :exports none :results drawer
 make_ts_function_from_expr(
-    "../generated/constant-load.ts",
+    "../src/generated/constant-load.ts",
     "angularVelocity",
     angular_velocity_function.rhs)
 #+end_src
 
 #+RESULTS:
 :results:
-#+begin_src typescript :eval never :tangle ../generated/constant-load.ts
+#+begin_src typescript :eval never :tangle ../src/generated/constant-load.ts
 function angularVelocity(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number): number {
   return -omega_free*tau_load/tau_stall + omega_free*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + omega_free - omega_free*Math.exp(-t*tau_stall/(I*omega_free)) + omega_i*Math.exp(-t*tau_stall/(I*omega_free));
 }
@@ -153,14 +153,14 @@ format_equations(angular_position_function)
 
 #+begin_src python :exports none
 make_ts_function_from_expr(
-    "../generated/constant-load.ts",
+    "../src/generated/constant-load.ts",
     "angularPosition",
     angular_position_function.rhs)
 #+end_src
 
 #+RESULTS:
 :results:
-#+begin_src typescript :eval never :tangle ../generated/constant-load.ts
+#+begin_src typescript :eval never :tangle ../src/generated/constant-load.ts
 function angularPosition(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number, theta_i: number): number {
   return I*Math.pow(omega_free, 2)*tau_load/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)/tau_stall + I*Math.pow(omega_free, 2)*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + I*omega_free*omega_i/tau_stall - I*omega_free*omega_i*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall - omega_free*t*tau_load/tau_stall + omega_free*t + theta_i;
 }

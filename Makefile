@@ -6,5 +6,5 @@ out/math: math/*.org
 	mv math/*.html out/math
 
 generated/: out/math
-	mkdir -p generated/
+	mkdir -p src/generated/
 	emacs math/*.org -Q --batch -f org-babel-tangle --kill
