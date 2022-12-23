@@ -21,14 +21,14 @@ def format_equations(*exprs):
         + r"\end{equation}"
         )
 
-def make_ts_function_from_expr(filename, name, expr):
-    return (f"#+begin_src typescript :eval never :tangle {filename}\n"
-            + f"function {name}("
-            + ", ".join(sorted([str(s)+": number" for s in expr.free_symbols]))
-            + "): number {\n"
-            + "  return " + sym.printing.jscode(expr) + ";\n"
-            + "}\n"
+def code_to_ts_src(name, body):
+    return (f"#+name: {name}\n"
+            +f"#+begin_src typescript :eval never\n"
+            + body + "\n"
             + "#+end_src\n")
+
+def expr_to_ts_src(name, expr):
+    return code_to_ts_src(name, sym.printing.jscode(expr))
 #+end_src
 
 When a motor runs between stall torque (stall torque) and free speed (0 torque), the torque changes linearly with the speed:
@@ -114,22 +114,6 @@ format_equations(
 :end:
 
 
-#+begin_src python :exports none :results drawer
-make_ts_function_from_expr(
-    "../src/generated/constant-load.ts",
-    "angularVelocity",
-    angular_velocity_function.rhs)
-#+end_src
-
-#+RESULTS:
-:results:
-#+begin_src typescript :eval never :tangle ../src/generated/constant-load.ts
-function angularVelocity(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number): number {
-  return -omega_free*tau_load/tau_stall + omega_free*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + omega_free - omega_free*Math.exp(-t*tau_stall/(I*omega_free)) + omega_i*Math.exp(-t*tau_stall/(I*omega_free));
-}
-#+end_src
-:end:
-
 ** Angle as a function of time
 While angular velocity as a function of time is directly useful for a couple mechanisms (e.g. flywheels, intakes), most of the time the cumulative angle is more important.
 
@@ -151,20 +135,25 @@ format_equations(angular_position_function)
 \end{aligned}\end{equation}
 :end:
 
-#+begin_src python :exports none
-make_ts_function_from_expr(
-    "../src/generated/constant-load.ts",
-    "angularPosition",
-    angular_position_function.rhs)
+** Angular Acceleration as a function of time
+This is the derivate of the angular velocity with respect to time:
+#+begin_src python
+angular_acceleration_function = sym.simplify(sym.Eq(
+    angular_acceleration,
+    angular_velocity_function.rhs.diff(t)))
+
+format_equations(
+    sym.Eq(angular_acceleration, angular_velocity.diff(t)),
+    angular_acceleration_function
+)
 #+end_src
 
 #+RESULTS:
 :results:
-#+begin_src typescript :eval never :tangle ../src/generated/constant-load.ts
-function angularPosition(I: number, omega_free: number, omega_i: number, t: number, tau_load: number, tau_stall: number, theta_i: number): number {
-  return I*Math.pow(omega_free, 2)*tau_load/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)/tau_stall + I*Math.pow(omega_free, 2)*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + I*omega_free*omega_i/tau_stall - I*omega_free*omega_i*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall - omega_free*t*tau_load/tau_stall + omega_free*t + theta_i;
-}
-#+end_src
+\begin{equation}\begin{aligned}
+\alpha{\left(t \right)} &= \frac{d}{d t} \omega{\left(t \right)}\\
+\alpha{\left(t \right)} &= \frac{\left(\omega_{free} \left(- \tau_{load} + \tau_{stall}\right) - \omega_{i} \tau_{stall}\right) e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{I \omega_{free}}
+\end{aligned}\end{equation}
 :end:
 
 * Linear loads
@@ -256,4 +245,102 @@ format_equations(
 v{\left(t \right)} &= - \frac{\omega_{free} r \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} r \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \omega_{free} r - \omega_{free} r e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}} + v_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}\\
 x{\left(t \right)} &= \frac{m \omega_{free}^{2} r^{3} \tau_{load}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{3} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{3}}{\tau_{stall}} + \frac{m \omega_{free}^{2} r^{3} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \frac{m \omega_{free} r^{2} v_{i}}{\tau_{stall}} - \frac{m \omega_{free} r^{2} v_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} - \frac{\omega_{free} r t \tau_{load}}{\tau_{stall}} + \omega_{free} r t + x_{i}
 \end{aligned}\end{equation}
+:end:
+
+* Code :noexport:
+#+begin_src typescript :eval never :noweb yes :tangle ../src/generated/constant-load.ts
+import { PositionMechanism, VelocityMechanism } from '../mechanism';
+import { Motor } from '../motor';
+
+export class ConstantLoadAngularMechanism implements PositionMechanism, VelocityMechanism {
+  constructor(
+    private readonly motor: Motor,
+    private readonly loadTorque: number,
+    private readonly momentOfInertia: number,
+    private readonly initialAngularPosition: number,
+    private readonly initialAngularVelocity: number,
+  ) {}
+
+ position(t: number) {
+   <<local-variables>>
+
+   return <<angular-position>>;
+  }
+
+  velocity(t: number) {
+    <<local-variables>>
+
+    return <<angular-velocity>>;
+  }
+
+  acceleration(t: number) {
+    <<local-variables>>
+
+    return <<angular-acceleration>>;
+  }
+}
+#+end_src
+
+#+name: local-variables
+#+begin_src typescript :eval never
+const tau_stall = this.motor.stallTorque;
+const omega_free = this.motor.freeSpeed;
+const tau_load = this.loadTorque;
+const I = this.momentOfInertia;
+const theta_i = this.initialAngularPosition;
+const omega_i = this.initialAngularVelocity;
+#+end_src
+** Generated
+*** Required input variables
+Shows which variables are required inputs for each function
+#+begin_src python
+angular_position_function.free_symbols.union(
+    angular_velocity_function.free_symbols,
+    angular_acceleration.free_symbols)
+#+end_src
+#+RESULTS:
+:results:
+{omega_free, I, omega_i, theta_i, t, tau_stall, tau_load}
+:end:
+*** Functions
+#+begin_src python
+expr_to_ts_src(
+    "angular-position",
+    angular_position_function.rhs)
+#+end_src
+
+#+RESULTS:
+:results:
+#+name: angular-position
+#+begin_src typescript :eval never
+I*Math.pow(omega_free, 2)*tau_load/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/Math.pow(tau_stall, 2) - I*Math.pow(omega_free, 2)/tau_stall + I*Math.pow(omega_free, 2)*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + I*omega_free*omega_i/tau_stall - I*omega_free*omega_i*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall - omega_free*t*tau_load/tau_stall + omega_free*t + theta_i
+#+end_src
+:end:
+
+#+begin_src python
+expr_to_ts_src(
+    "angular-velocity",
+    angular_velocity_function.rhs)
+#+end_src
+
+#+RESULTS:
+:results:
+#+name: angular-velocity
+#+begin_src typescript :eval never
+-omega_free*tau_load/tau_stall + omega_free*tau_load*Math.exp(-t*tau_stall/(I*omega_free))/tau_stall + omega_free - omega_free*Math.exp(-t*tau_stall/(I*omega_free)) + omega_i*Math.exp(-t*tau_stall/(I*omega_free))
+#+end_src
+:end:
+
+#+begin_src python
+expr_to_ts_src(
+    "angular-acceleration",
+    angular_acceleration_function.rhs)
+#+end_src
+
+#+RESULTS:
+:results:
+#+name: angular-acceleration
+#+begin_src typescript :eval never
+(omega_free*(-tau_load + tau_stall) - omega_i*tau_stall)*Math.exp(-t*tau_stall/(I*omega_free))/(I*omega_free)
+#+end_src
 :end:

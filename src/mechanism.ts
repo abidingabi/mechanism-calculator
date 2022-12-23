@@ -18,14 +18,14 @@ function newtonsMethod(
   return guess;
 }
 
-interface PositionMechanism {
-  velocity(time: number): number;
+export interface PositionMechanism {
   position(time: number): number;
+  velocity(time: number): number;
 }
 
-interface VelocityMechanism {
-  acceleration(time: number): number;
+export interface VelocityMechanism {
   velocity(time: number): number;
+  acceleration(time: number): number;
 }
 
 /**
