@@ -1,0 +1,205 @@
+#+title: Kinematic Analysis of DC Motors
+#+author: Abigail
+#+options: toc:nil date:nil
+
+#+property: header-args :session :results drawer :exports results
+* Angular velocity as a function of time
+In order to determine how a mechanism behave, it is first necessary to determine how a motor behaves. The thing that is generally useful for a mechanism is to figure out when it gets to a certain position---for that, it must be known when it gets to a certain position.
+
+#+begin_src python :session :results none :exports none
+# import sympy, create utility functions
+import sympy as sym
+
+def format_equations(*exprs):
+    return (
+        r"\begin{equation}"
+        + r"\begin{aligned}"
+        + "\n"
+        + (r"\\" + "\n").join([sym.latex(expr).replace("=", "&=") for expr in exprs])
+        + "\n"
+        + r"\end{aligned}"
+        + r"\end{equation}"
+        )
+#+end_src
+
+When a motor runs between stall torque (stall torque) and free speed (0 torque), the torque changes linearly with the speed:
+
+#+begin_src python
+torque_applied, t = sym.symbols('tau_applied t')
+
+stall_torque = sym.Symbol('tau_stall', positive=True)
+free_angular_speed = sym.Symbol('omega_free', positive=True)
+
+angular_velocity = sym.Function('omega')(t)
+
+premise = sym.Eq(torque_applied, stall_torque*(1-angular_velocity/free_angular_speed))
+
+format_equations(premise)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+\tau_{applied} &= \tau_{stall} \left(1 - \frac{\omega{\left(t \right)}}{\omega_{free}}\right)
+\end{aligned}\end{equation}
+:end:
+
+The torque applied by the motor ($\tau_{applied}$) must equal the torque used to accelerate the motor shaft and anything attached to it rotationally plus the torque exerted by the linear load.
+#+begin_src python
+load_torque = sym.symbols('tau_load')
+moment_of_inertia = sym.Symbol('I', positive=True)
+angular_acceleration = sym.Function('alpha')(t)
+
+net_torque_equation_setup = sym.Eq(
+    torque_applied,
+    load_torque
+    + moment_of_inertia*angular_acceleration
+)
+net_torque_equation = net_torque_equation_setup.subs(premise.lhs, premise.rhs)
+
+format_equations(net_torque_equation_setup, net_torque_equation)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+\tau_{applied} &= I \alpha{\left(t \right)} + \tau_{load}\\
+\tau_{stall} \left(1 - \frac{\omega{\left(t \right)}}{\omega_{free}}\right) &= I \alpha{\left(t \right)} + \tau_{load}
+\end{aligned}\end{equation}
+:end:
+
+In differential form, with angular acceleration being the derivative of angular velocity:
+
+#+begin_src python
+differential_form = net_torque_equation.subs(angular_acceleration, angular_velocity.diff(t))
+
+format_equations(differential_form)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+\tau_{stall} \left(1 - \frac{\omega{\left(t \right)}}{\omega_{free}}\right) &= I \frac{d}{d t} \omega{\left(t \right)} + \tau_{load}
+\end{aligned}\end{equation}
+:end:
+
+Solved for an arbitrary initial angular velocity, and an initial angular velocity of 0:
+#+begin_src python
+initial_angular_velocity = sym.symbols('omega_i')
+
+angular_velocity_function = sym.simplify(sym.dsolve(
+    differential_form,
+    ics={angular_velocity.subs(t,0): initial_angular_velocity}))
+
+format_equations(
+    angular_velocity_function,
+    angular_velocity_function.subs(initial_angular_velocity, 0))
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+\omega{\left(t \right)} &= - \frac{\omega_{free} \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \omega_{free} - \omega_{free} e^{- \frac{t \tau_{stall}}{I \omega_{free}}} + \omega_{i} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}\\
+\omega{\left(t \right)} &= - \frac{\omega_{free} \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \omega_{free} - \omega_{free} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}
+\end{aligned}\end{equation}
+:end:
+
+** Angle as a function of time
+While angular velocity as a function of time is directly useful for a couple mechanisms (e.g. flywheels, intakes), most of the time the cumulative angle is more important.
+
+By integrating the equation for angular velocity, an equation for angle with respect to time can be found.
+#+begin_src python
+angular_position = sym.Function('theta')(t)
+initial_angular_position = sym.symbols('theta_i')
+angular_position_function = sym.simplify(sym.dsolve(
+    angular_velocity_function.subs(angular_velocity, angular_position.diff()),
+    ics={angular_position.subs(t,0): initial_angular_position}))
+
+format_equations(angular_position_function)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+\theta{\left(t \right)} &= \frac{I \omega_{free}^{2} \tau_{load}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2}}{\tau_{stall}} + \frac{I \omega_{free}^{2} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \frac{I \omega_{free} \omega_{i}}{\tau_{stall}} - \frac{I \omega_{free} \omega_{i} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} - \frac{\omega_{free} t \tau_{load}}{\tau_{stall}} + \omega_{free} t + \theta_{i}
+\end{aligned}\end{equation}
+:end:
+* Linear loads
+Linear mechanisms are useful in addition to angular ones---e.g., linear slides or a drivetrain.
+
+** Linear Output
+Converting from angular velocity/position to linear velocity/position only requires multiplying the radius ($r$). Therefore:
+
+#+begin_src python
+radius = sym.symbols('r')
+
+linear_velocity = sym.Function('v')(t)
+linear_position = sym.Function('x')(t)
+
+linear_velocity_function = sym.Eq(
+    linear_velocity,
+    angular_velocity_function.rhs * radius
+)
+linear_position_function = sym.Eq(
+    linear_position,
+    angular_position_function.rhs * radius
+)
+
+format_equations(
+    sym.Eq(linear_velocity, radius*angular_velocity),
+    linear_velocity_function,
+    sym.Eq(linear_position, radius*angular_position),
+    linear_position_function
+)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+v{\left(t \right)} &= r \omega{\left(t \right)}\\
+v{\left(t \right)} &= r \left(- \frac{\omega_{free} \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \omega_{free} - \omega_{free} e^{- \frac{t \tau_{stall}}{I \omega_{free}}} + \omega_{i} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}\right)\\
+x{\left(t \right)} &= r \theta{\left(t \right)}\\
+x{\left(t \right)} &= r \left(\frac{I \omega_{free}^{2} \tau_{load}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2} \tau_{load} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}^{2}} - \frac{I \omega_{free}^{2}}{\tau_{stall}} + \frac{I \omega_{free}^{2} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} + \frac{I \omega_{free} \omega_{i}}{\tau_{stall}} - \frac{I \omega_{free} \omega_{i} e^{- \frac{t \tau_{stall}}{I \omega_{free}}}}{\tau_{stall}} - \frac{\omega_{free} t \tau_{load}}{\tau_{stall}} + \omega_{free} t + \theta_{i}\right)
+\end{aligned}\end{equation}
+:end:
+
+
+** Equivalent Moment of Inertia
+Even after doing that, there is still a moment of inertia term: linear mechanisms can be represented as an angular mechanism with a specific moment of inertia.
+
+Starting with some physics principles:
+\begin{equation}
+\begin{aligned}
+\tau=Fr&=I\alpha \\
+F&=ma
+\end{aligned}
+\end{equation}
+
+Substituting these into each other:
+\begin{equation}
+\begin{aligned}
+mar&=I\alpha \\
+m(\alpha r)r&=I\alpha \\
+m\alpha r^2&=I\alpha \\
+mr^2&=I \\
+\end{aligned}
+\end{equation}
+
+Therefore, a linear force acting on something with a mass $m$ at a radius $r$ has a moment of inertia of $mr^2$. Assuming that the load torque is also at the same radius, it can be represented as $F_{load}r$. Substituting this into the previously derived linear velocity/position functions:
+
+#+begin_src python
+mass = sym.symbols('m')
+
+format_equations(
+    linear_velocity_function.subs(moment_of_inertia, mass*radius**2),
+    linear_position_function.subs(moment_of_inertia, mass*radius**2)
+)
+#+end_src
+
+#+RESULTS:
+:results:
+\begin{equation}\begin{aligned}
+v{\left(t \right)} &= r \left(- \frac{\omega_{free} \tau_{load}}{\tau_{stall}} + \frac{\omega_{free} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \omega_{free} - \omega_{free} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}} + \omega_{i} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}\right)\\
+x{\left(t \right)} &= r \left(\frac{m \omega_{free}^{2} r^{2} \tau_{load}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{2} \tau_{load} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}^{2}} - \frac{m \omega_{free}^{2} r^{2}}{\tau_{stall}} + \frac{m \omega_{free}^{2} r^{2} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} + \frac{m \omega_{free} \omega_{i} r^{2}}{\tau_{stall}} - \frac{m \omega_{free} \omega_{i} r^{2} e^{- \frac{t \tau_{stall}}{m \omega_{free} r^{2}}}}{\tau_{stall}} - \frac{\omega_{free} t \tau_{load}}{\tau_{stall}} + \omega_{free} t + \theta_{i}\right)
+\end{aligned}\end{equation}
+:end:
