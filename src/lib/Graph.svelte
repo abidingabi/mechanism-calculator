@@ -121,12 +121,22 @@
 
         point: {
           radius: 0,
+          hoverRadius: 8,
         },
+      },
+
+      interaction: {
+        mode: "index",
+        intersect: false,
       },
 
       plugins: {
         tooltip: {
           enabled: true,
+          position: "nearest",
+          callbacks: {
+            beforeTitle: (_: any) => xAxis + ":",
+          },
         },
         legend: {
           display: true,
