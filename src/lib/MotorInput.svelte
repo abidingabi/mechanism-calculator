@@ -1,4 +1,5 @@
 <script lang="ts">
+  import NumericInput from "./NumericInput.svelte";
   import QuantityInput from "./QuantityInput.svelte";
   import {
     angularVelocityUnits,
@@ -43,13 +44,10 @@
 </script>
 
 <div>
-  <label for="gear-ratio">Gear Ratio:</label>
-  <input type="number" id="gear-ratio" bind:value={gearRatio} min="0" />
+  <NumericInput label="Gear Ratio:" range="positive" bind:value={gearRatio} />
 </div>
-
 <div>
-  <label for="motor-count">Motor Count:</label>
-  <input type="number" id="motor-count" bind:value={count} min="1" />
+  <NumericInput label="Motor Count:" range="positive" bind:value={count} />
 </div>
 
 <div>
@@ -61,11 +59,13 @@
   <div>
     <QuantityInput
       label="Free Speed:"
+      range="positive"
       units={angularVelocityUnits}
       bind:value={freeSpeed}
     />
     <QuantityInput
       label="Stall Torque:"
+      range="positive"
       units={torqueUnits}
       bind:value={stallTorque}
     />
@@ -73,16 +73,19 @@
     {#if needElectrical}
       <QuantityInput
         label="Stall Current:"
+        range="positive"
         units={currentUnits}
         bind:value={stallCurrent}
       />
       <QuantityInput
         label="Free Current:"
+        range="positive"
         units={currentUnits}
         bind:value={freeCurrent}
       />
       <QuantityInput
         label="Voltage:"
+        range="positive"
         units={voltageUnits}
         bind:value={voltage}
       />
