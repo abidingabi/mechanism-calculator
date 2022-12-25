@@ -1,9 +1,7 @@
 <script lang="ts">
-  import type { knownMotors } from "../motor";
   import type { Motor } from "../motor";
-  import MotorInput from "./MotorInput.svelte";
   import Graph from "./Graph.svelte";
-  import { makeGraphable } from "./Graph.svelte";
+  import { makeGraphable, makeYAxis } from "./Graph.svelte";
 
   export let motor: Motor;
 
@@ -17,16 +15,49 @@
     motor.stallCurrent;
 
   $: efficiency = (speed: number) =>
-    100 * powerOutput(speed) / (currentDraw(speed) * motor.voltage);
+    (100 * powerOutput(speed)) / (currentDraw(speed) * motor.voltage);
+
+  /**
+   * Calls a function that expects rad/s with a RPM input.
+   */
+  function inputRPM(func: (speed: number) => number): (rpm: number) => number {
+    return (rpm) => func((rpm * Math.PI * 2) / 60);
+  }
 </script>
 
 {#if motor != undefined}
+  {@const freeSpeedRPM = (60 * motor.freeSpeed) / (Math.PI * 2)}
   <Graph
+    xAxis="Motor Speed (RPM)"
     graphables={[
-      makeGraphable(torque, 0, motor.freeSpeed),
-      makeGraphable(powerOutput, 0, motor.freeSpeed),
-      makeGraphable(currentDraw, 0, motor.freeSpeed),
-      makeGraphable(efficiency, 0, motor.freeSpeed),
+      makeGraphable(
+        "Output Power (W)",
+        inputRPM(powerOutput),
+        0,
+        freeSpeedRPM,
+        makeYAxis("Current (A), Power (W)")
+      ),
+      makeGraphable(
+        "Current (A)",
+        inputRPM(currentDraw),
+        0,
+        freeSpeedRPM,
+        makeYAxis("Current (A), Power (W)")
+      ),
+      makeGraphable(
+        "Torque (N⋅m)",
+        inputRPM(torque),
+        0,
+        freeSpeedRPM,
+        makeYAxis("Torque (N⋅m)", "right")
+      ),
+      makeGraphable(
+        "Efficiency (%)",
+        inputRPM(efficiency),
+        0,
+        freeSpeedRPM,
+        makeYAxis("Efficiency (%)", "left", 100)
+      ),
     ]}
   />
 {/if}
