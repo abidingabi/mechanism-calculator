@@ -19,9 +19,10 @@
 
   /**
    * Calls a function that expects rad/s with a RPM input.
+   * Also sets the minimum at 0, because of floating point error.
    */
   function inputRPM(func: (speed: number) => number): (rpm: number) => number {
-    return (rpm) => func((rpm * Math.PI * 2) / 60);
+    return (rpm) => Math.max(func((rpm * Math.PI * 2) / 60), 0);
   }
 
   $: freeSpeedRPM = (60 * motor.freeSpeed) / (Math.PI * 2);

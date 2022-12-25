@@ -153,9 +153,11 @@
       chart = new Chart(canvas, chartOptions as any);
     }
 
-    chart.data.datasets = data.datasets as any;
+    for (let i = 0; i < chart.data.datasets.length; i++) {
+      chart.data.datasets[i].data = data.datasets[i].data as any;
+    }
 
-    chart.update("none");
+    chart.update();
   });
 </script>
 
