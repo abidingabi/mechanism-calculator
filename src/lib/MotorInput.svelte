@@ -22,8 +22,8 @@
   // used for custom motor
   let freeSpeed = 0;
   let stallTorque = 0;
-  let freeCurrent = 0;
   let stallCurrent = 0;
+  let freeCurrent = 0;
   let voltage = 0;
 
   let gearRatio = 1;
@@ -33,8 +33,8 @@
     ? {
         freeSpeed,
         stallTorque,
-        freeCurrent,
         stallCurrent,
+        freeCurrent,
         voltage,
       }
     : selectedMotor;
@@ -72,14 +72,14 @@
 
     {#if needElectrical}
       <QuantityInput
-        label="Free Current:"
-        units={currentUnits}
-        bind:value={freeCurrent}
-      />
-      <QuantityInput
         label="Stall Current:"
         units={currentUnits}
         bind:value={stallCurrent}
+      />
+      <QuantityInput
+        label="Free Current:"
+        units={currentUnits}
+        bind:value={freeCurrent}
       />
       <QuantityInput
         label="Voltage:"

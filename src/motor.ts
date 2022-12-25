@@ -5,8 +5,8 @@ export interface Motor {
   readonly stallTorque: number;
   readonly freeSpeed: number;
   readonly voltage: number;
-  readonly freeCurrent: number;
   readonly stallCurrent: number;
+  readonly freeCurrent: number;
 }
 
 /**
@@ -27,8 +27,8 @@ export function quantity(motor: Motor, quantity: number): Motor {
   return {
     ...motor,
     stallTorque: motor.stallTorque * quantity,
-    freeCurrent: motor.freeCurrent * quantity,
     stallCurrent: motor.stallCurrent * quantity,
+    freeCurrent: motor.freeCurrent * quantity,
   };
 }
 
@@ -36,31 +36,31 @@ export function quantity(motor: Motor, quantity: number): Motor {
  * Stores: motor name,
  * free speed (RPM),
  * voltage (V),
- * stall torque (N*m)
- * free current (A),
- * stall current (A)
+ * stall torque (N*m),
+ * stall current (A),
+ * free current (A)
  */
 const motorSpecs: readonly [string, number, number, number, number, number][] =
   [
-    ["goBILDA (MATRIX)", 5900, 0.19, 12, 0.3, 11],
-    ["NeveRest", 5500, 0.17, 12, 0.4, 9.8],
-    ["REV Core Hex", 125, 3.2, 12, 0.2, 4.4],
-    ["REV HD Hex", 6000, 0.18, 12, 0.3, 11],
-    ["TorqueNado", 5900, 0.17, 12, 0.2, 9.8],
+    ["goBILDA (MATRIX)", 5900, 0.19, 12, 11, 0.3],
+    ["NeveRest", 5500, 0.17, 12, 9.8, 0.4],
+    ["REV Core Hex", 125, 3.2, 12, 4.4, 0.2],
+    ["REV HD Hex", 6000, 0.18, 12, 11, 0.3],
+    ["TorqueNado", 5900, 0.17, 12, 9.8, 0.2],
   ];
 
 /**
  * A list of names of motors along with their known specifications.
  */
 export const knownMotors: readonly [string, Motor][] = motorSpecs.map(
-  ([name, freeSpeedRPM, stallTorque, voltage, freeCurrent, stallCurrent]) => [
+  ([name, freeSpeedRPM, stallTorque, voltage, stallCurrent, freeCurrent]) => [
     name,
     {
       stallTorque,
       freeSpeed: (freeSpeedRPM * 2 * Math.PI) / 60,
       voltage,
-      freeCurrent,
       stallCurrent,
+      freeCurrent,
     },
   ]
 );
