@@ -42,7 +42,7 @@ export function quantity(motor: Motor, quantity: number): Motor {
  */
 const motorSpecs: readonly [string, number, number, number, number, number][] =
   [
-    ["goBILDA (Matrix)", 5900, 0.19, 12, 0.3, 11],
+    ["goBILDA (MATRIX)", 5900, 0.19, 12, 0.3, 11],
     ["NeveRest", 5500, 0.17, 12, 0.4, 9.8],
     ["REV Core Hex", 125, 3.2, 12, 0.2, 4.4],
     ["REV HD Hex", 6000, 0.18, 12, 0.3, 11],
