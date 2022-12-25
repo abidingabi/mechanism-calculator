@@ -9,5 +9,7 @@
   <h1>Mechanism Calculator</h1>
 
   <MotorInput bind:value={motor} />
-  <MotorCurve {motor} />
+  {#if motor != undefined}
+    <MotorCurve {motor} />
+  {/if}
 </main>

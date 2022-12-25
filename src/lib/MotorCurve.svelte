@@ -23,41 +23,40 @@
   function inputRPM(func: (speed: number) => number): (rpm: number) => number {
     return (rpm) => func((rpm * Math.PI * 2) / 60);
   }
+
+  $: freeSpeedRPM = (60 * motor.freeSpeed) / (Math.PI * 2);
 </script>
 
-{#if motor != undefined}
-  {@const freeSpeedRPM = (60 * motor.freeSpeed) / (Math.PI * 2)}
-  <Graph
-    xAxis="Motor Speed (RPM)"
-    graphables={[
-      makeGraphable(
-        "Output Power (W)",
-        inputRPM(powerOutput),
-        0,
-        freeSpeedRPM,
-        makeYAxis("Current (A), Power (W)")
-      ),
-      makeGraphable(
-        "Current (A)",
-        inputRPM(currentDraw),
-        0,
-        freeSpeedRPM,
-        makeYAxis("Current (A), Power (W)")
-      ),
-      makeGraphable(
-        "Torque (N⋅m)",
-        inputRPM(torque),
-        0,
-        freeSpeedRPM,
-        makeYAxis("Torque (N⋅m)", "right")
-      ),
-      makeGraphable(
-        "Efficiency (%)",
-        inputRPM(efficiency),
-        0,
-        freeSpeedRPM,
-        makeYAxis("Efficiency (%)", "left", 100)
-      ),
-    ]}
-  />
-{/if}
+<Graph
+  xAxis="Motor Speed (RPM)"
+  graphables={[
+    makeGraphable(
+      "Output Power (W)",
+      inputRPM(powerOutput),
+      0,
+      freeSpeedRPM,
+      makeYAxis("Current (A), Power (W)")
+    ),
+    makeGraphable(
+      "Current (A)",
+      inputRPM(currentDraw),
+      0,
+      freeSpeedRPM,
+      makeYAxis("Current (A), Power (W)")
+    ),
+    makeGraphable(
+      "Torque (N⋅m)",
+      inputRPM(torque),
+      0,
+      freeSpeedRPM,
+      makeYAxis("Torque (N⋅m)", "right")
+    ),
+    makeGraphable(
+      "Efficiency (%)",
+      inputRPM(efficiency),
+      0,
+      freeSpeedRPM,
+      makeYAxis("Efficiency (%)", "left", 100)
+    ),
+  ]}
+/>

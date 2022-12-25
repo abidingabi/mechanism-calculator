@@ -59,18 +59,38 @@
 
 {#if customMotor}
   <div>
-    <QuantityInput label="Free Speed:" units={angularVelocityUnits} bind:value={freeSpeed} />
-    <QuantityInput label="Stall Torque:" units={torqueUnits} bind:value={stallTorque} />
+    <QuantityInput
+      label="Free Speed:"
+      units={angularVelocityUnits}
+      bind:value={freeSpeed}
+    />
+    <QuantityInput
+      label="Stall Torque:"
+      units={torqueUnits}
+      bind:value={stallTorque}
+    />
 
     {#if needElectrical}
-      <QuantityInput label="Free Current:" units={currentUnits} bind:value={freeCurrent} />
-      <QuantityInput label="Stall Current:" units={currentUnits} bind:value={stallCurrent} />
-      <QuantityInput label="Voltage:" units={voltageUnits} bind:value={voltage} />
+      <QuantityInput
+        label="Free Current:"
+        units={currentUnits}
+        bind:value={freeCurrent}
+      />
+      <QuantityInput
+        label="Stall Current:"
+        units={currentUnits}
+        bind:value={stallCurrent}
+      />
+      <QuantityInput
+        label="Voltage:"
+        units={voltageUnits}
+        bind:value={voltage}
+      />
     {/if}
   </div>
 {:else}
   <div>
-      <label for="motor-select">Motor: </label>
+    <label for="motor-select">Motor: </label>
     <select id="motor-select" bind:value={selectedMotor}>
       {#each knownMotors as [name, motor]}
         <option value={motor}>
@@ -80,4 +100,3 @@
     </select>
   </div>
 {/if}
-
