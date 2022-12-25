@@ -3,6 +3,7 @@
 
   export let units: UnitCollection;
   export let placeholder: string = "quantity";
+  export let value: number;
 
   let magnitude = 0;
   let selectedUnit = units.units[0];
@@ -12,8 +13,8 @@
 
 <input type="number" bind:value={magnitude} {placeholder} />
 <select bind:value={selectedUnit}>
-  {#each units.units as unit, index}
-    <option selected={index == 0} value={unit}>
+  {#each units.units as unit}
+    <option value={unit}>
       {unit.name}
     </option>
   {/each}

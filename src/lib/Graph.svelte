@@ -35,7 +35,7 @@
 
   export let graphables: Graphable[];
 
-  const data = {
+  $: data = {
     datasets: graphables.map((g) => {
       let dx = (g.xMax - g.xMin) / (g.samples - 1);
       return {
@@ -46,7 +46,7 @@
     }),
   };
 
-  const chartOptions = {
+  $: chartOptions = {
     type: "line",
     data,
 
@@ -71,9 +71,16 @@
   };
 
   let canvas: HTMLCanvasElement;
+  let chart: Chart = null;
 
   afterUpdate(() => {
-    new Chart(canvas, chartOptions as any);
+    if (chart == null) {
+      chart = new Chart(canvas, chartOptions as any);
+    }
+
+    chart.data.datasets = data.datasets;
+
+    chart.update("none");
   });
 </script>
 

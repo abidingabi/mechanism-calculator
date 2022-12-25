@@ -32,7 +32,7 @@ export interface UnitCollection {
 
 function makeUnitCollection(
   baseUnitName: string,
-  ...unitDescriptions: [string, number][]
+  ...unitDescriptions: readonly [string, number][]
 ): UnitCollection {
   return {
     baseUnit: {
@@ -51,4 +51,31 @@ export const angularVelocityUnits = makeUnitCollection(
   ["rps", 2 * Math.PI],
   ["rad/s", 1],
   ["degrees/s", (2 * Math.PI) / 360]
+);
+
+export const torqueUnits = makeUnitCollection(
+  "N⋅m",
+  ["N⋅m", 1],
+  ["kg⋅cm", 0.0980665],
+  ["oz⋅in", 0.0070615518],
+  ["ft⋅lbf", 1.3558179]
+);
+
+/*
+ * Electrical units, added for completeness.
+ * Alternative units from the wonderful CCC system.
+ * See https://www.youtube.com/watch?v=KmfdeWd0RMk for more.
+ */
+export const currentUnits = makeUnitCollection(
+  "A",
+  ["A", 1],
+  // (Middle C⋅coulomb)
+  ["C₄⋅C", 220 * Math.pow(2, 1 / 4)]
+);
+
+export const voltageUnits = makeUnitCollection(
+  "V",
+  ["V", 1],
+  // calorie / coulomb
+  ["cal/C", 4.184]
 );
