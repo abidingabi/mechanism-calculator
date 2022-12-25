@@ -249,8 +249,8 @@ x{\left(t \right)} &= \frac{m \omega_{free}^{2} r^{3} \tau_{load}}{\tau_{stall}^
 
 * Code :noexport:
 #+begin_src typescript :eval never :noweb yes :tangle ../src/generated/constant-load.ts
-import { PositionMechanism, VelocityMechanism } from '../mechanism';
-import { Motor } from '../motor';
+import type { PositionMechanism, VelocityMechanism } from '../mechanism';
+import type { Motor } from '../motor';
 
 export class ConstantLoadAngularMechanism implements PositionMechanism, VelocityMechanism {
   constructor(

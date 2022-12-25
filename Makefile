@@ -1,6 +1,7 @@
 all: site dist/math generated/
 
 site: generated/
+	npm run check
 	npm run build
 
 generated/: dist/math
