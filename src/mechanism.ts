@@ -43,8 +43,8 @@ export function timeToPosition(
 ): number {
   return newtonsMethod(
     goal,
-    mechanism.position,
-    mechanism.velocity,
+    (t) => mechanism.position(t),
+    (t) => mechanism.velocity(t),
     INITIAL_TIME_GUESS, // this is being used as the initial guess
     iterations
   );
@@ -57,8 +57,8 @@ export function timeToVelocity(
 ): number {
   return newtonsMethod(
     goal,
-    mechanism.velocity,
-    mechanism.acceleration,
+    (t) => mechanism.velocity(t),
+    (t) => mechanism.acceleration(t),
     INITIAL_TIME_GUESS,
     iterations
   );

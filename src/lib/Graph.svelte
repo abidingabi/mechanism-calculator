@@ -69,19 +69,6 @@
   export let graphables: Graphable[];
   export let samples = 100;
 
-  $: data = {
-    datasets: graphables.map((g) => {
-      let dx = (g.xMax - g.xMin) / (samples - 1);
-      return {
-        label: g.label,
-        yAxisID: g.yAxis.label,
-        data: Array.from({ length: samples }, (_, i) => {
-          return [g.xMin + dx * i, g.func(g.xMin + dx * i)];
-        }),
-      };
-    }),
-  };
-
   let yScales: any;
   $: {
     yScales = {};
@@ -95,13 +82,14 @@
         type: "linear",
         position: g.yAxis.position,
         max: g.yAxis.max,
+        beginAtZero: true,
       };
     }
   }
 
+  let chartOptions: any;
   $: chartOptions = {
     type: "line",
-    data,
     options: {
       scales: {
         ...yScales,
@@ -149,12 +137,26 @@
   let chart: Chart = null;
 
   afterUpdate(() => {
-    if (chart == null) {
-      chart = new Chart(canvas, chartOptions as any);
-    }
+    const data = {
+      datasets: graphables.map((g) => {
+        let dx = (g.xMax - g.xMin) / (samples - 1);
+        return {
+          label: g.label,
+          yAxisID: g.yAxis.label,
+          data: Array.from({ length: samples }, (_, i) => {
+            return [g.xMin + dx * i, g.func(g.xMin + dx * i)];
+          }),
+        };
+      }),
+    };
 
-    for (let i = 0; i < chart.data.datasets.length; i++) {
-      chart.data.datasets[i].data = data.datasets[i].data as any;
+    if (chart == null) {
+      chartOptions.data = data;
+      chart = new Chart(canvas, chartOptions);
+    } else {
+      for (let i = 0; i < chart.data.datasets.length; i++) {
+        chart.data.datasets[i].data = data.datasets[i].data as any;
+      }
     }
 
     chart.update();

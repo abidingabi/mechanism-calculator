@@ -32,7 +32,7 @@ export interface UnitCollection {
 
 function makeUnitCollection(
   baseUnitName: string,
-  ...unitDescriptions: readonly [string, number][]
+  ...unitDescriptions: [string, number][]
 ): UnitCollection {
   return {
     baseUnit: {
@@ -44,6 +44,52 @@ function makeUnitCollection(
     }),
   };
 }
+
+/*
+ * Linear units
+ */
+export const positionUnits = makeUnitCollection(
+  "m",
+  ["m", 1],
+  ["mm", 0.001],
+  ["cm", 0.01],
+  ["in", 0.0254],
+  ["feet", 0.3048]
+);
+
+export const velocityUnits = makeUnitCollection(
+  "m/s",
+  ...positionUnits.units.map((unit: Unit): [string, number] => [
+    unit.name + "/s",
+    unit.multiplier,
+  ])
+);
+
+export const accelerationUnits = makeUnitCollection(
+  "m/s²",
+  ...positionUnits.units.map((unit: Unit): [string, number] => [
+    unit.name + "/s²",
+    unit.multiplier,
+  ])
+);
+
+export const massUnits = makeUnitCollection(
+  "kg",
+  ["kg", 1],
+  ["g", 0.001],
+  ["lb", 0.45359237]
+);
+
+export const forceUnits = makeUnitCollection(
+  "N",
+  ["N", 1],
+  ["kgf", 9.80665],
+  ["lbf", 4.4482216]
+);
+
+/*
+ * Rotational units.
+ */
 
 export const angularVelocityUnits = makeUnitCollection(
   "rad/s",
@@ -79,3 +125,8 @@ export const voltageUnits = makeUnitCollection(
   // calorie / coulomb
   ["cal/C", 4.184]
 );
+
+/*
+ * Misc. units
+ */
+export const timeUnits = makeUnitCollection("s", ["s", 1], ["min", 60]);
