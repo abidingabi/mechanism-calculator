@@ -35,8 +35,8 @@ export function quantity(motor: Motor, quantity: number): Motor {
 /**
  * Stores: motor name,
  * free speed (RPM),
- * voltage (V),
  * stall torque (N⋅m),
+ * voltage (V),
  * stall current (A),
  * free current (A)
  */
@@ -47,6 +47,8 @@ const motorSpecs: readonly [string, number, number, number, number, number][] =
     ["REV Core Hex", 125, 3.2, 12, 4.4, 0.2],
     ["REV HD Hex", 6000, 0.18, 12, 11, 0.3],
     ["TorqueNado", 5900, 0.17, 12, 9.8, 0.2],
+    ["REV NEO", 5676, 2.6, 12, 150, 1.8],
+    ["REV NEO 550", 11000, 0.97, 12, 100, 1.4],
   ];
 
 /**
