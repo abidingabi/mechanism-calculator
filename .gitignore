@@ -2,6 +2,7 @@
 env/
 dist/
 src/generated/
-/pages/
+/tools/
 .envrc
 node_modules
+math/*.html

@@ -9,7 +9,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        motor: resolve(__dirname, 'pages/motor/index.html'),
+        motor: resolve(__dirname, 'tools/motor/index.html'),
       },
     },
  }

@@ -1,7 +1,8 @@
 <nav>
   <ul>
     <li><a href="/">Home</a></li>
-    <li><a href="/pages/motor/">Motor</a></li>
+    <li><a href="/tools/motor/">Motor</a></li>
+    <li><a href="/math/kinematic-analysis-of-dc-motors.html">Math</a></li>
   </ul>
 </nav>
 

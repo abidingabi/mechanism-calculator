@@ -4,7 +4,7 @@ import Motor from "./pages/Motor.svelte";
 
 export const paths = {
   "/": Index,
-  "/pages/motor/": Motor,
+  "/tools/motor/": Motor,
 };
 
 const app = new paths[window.location.pathname]({
