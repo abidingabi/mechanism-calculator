@@ -1,7 +1,13 @@
 import "./app.css";
-import App from "./App.svelte";
+import Index from "./pages/Index.svelte";
+import Motor from "./pages/Motor.svelte";
 
-const app = new App({
+export const paths = {
+  "/": Index,
+  "/pages/motor/": Motor,
+};
+
+const app = new paths[window.location.pathname]({
   target: document.getElementById("app"),
 });
 

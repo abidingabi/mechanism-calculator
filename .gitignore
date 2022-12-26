@@ -2,5 +2,6 @@
 env/
 dist/
 src/generated/
+/pages/
 .envrc
 node_modules

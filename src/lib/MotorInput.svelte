@@ -44,62 +44,64 @@
 </script>
 
 <div>
-  <NumericInput label="Gear Ratio:" range="positive" bind:value={gearRatio} />
-</div>
-<div>
-  <NumericInput label="Motor Count:" range="positive" bind:value={count} />
-</div>
-
-<div>
-  <label for="custom-motor">Custom Motor?:</label>
-  <input type="checkbox" id="custom-motor" bind:checked={customMotor} />
-</div>
-
-{#if customMotor}
   <div>
-    <QuantityInput
-      label="Free Speed:"
-      range="positive"
-      units={angularVelocityUnits}
-      bind:value={freeSpeed}
-    />
-    <QuantityInput
-      label="Stall Torque:"
-      range="positive"
-      units={torqueUnits}
-      bind:value={stallTorque}
-    />
-
-    {#if needElectrical}
-      <QuantityInput
-        label="Stall Current:"
-        range="positive"
-        units={currentUnits}
-        bind:value={stallCurrent}
-      />
-      <QuantityInput
-        label="Free Current:"
-        range="positive"
-        units={currentUnits}
-        bind:value={freeCurrent}
-      />
-      <QuantityInput
-        label="Voltage:"
-        range="positive"
-        units={voltageUnits}
-        bind:value={voltage}
-      />
-    {/if}
+    <NumericInput label="Gear Ratio:" range="positive" bind:value={gearRatio} />
   </div>
-{:else}
   <div>
-    <label for="motor-select">Motor: </label>
-    <select id="motor-select" bind:value={selectedMotor}>
-      {#each knownMotors as [name, motor]}
-        <option value={motor}>
-          {name}
-        </option>
-      {/each}
-    </select>
+    <NumericInput label="Motor Count:" range="positive" bind:value={count} />
   </div>
-{/if}
+
+  <div>
+    <label for="custom-motor">Custom Motor?:</label>
+    <input type="checkbox" id="custom-motor" bind:checked={customMotor} />
+  </div>
+
+  {#if customMotor}
+    <div>
+      <QuantityInput
+        label="Free Speed:"
+        range="positive"
+        units={angularVelocityUnits}
+        bind:value={freeSpeed}
+      />
+      <QuantityInput
+        label="Stall Torque:"
+        range="positive"
+        units={torqueUnits}
+        bind:value={stallTorque}
+      />
+
+      {#if needElectrical}
+        <QuantityInput
+          label="Stall Current:"
+          range="positive"
+          units={currentUnits}
+          bind:value={stallCurrent}
+        />
+        <QuantityInput
+          label="Free Current:"
+          range="positive"
+          units={currentUnits}
+          bind:value={freeCurrent}
+        />
+        <QuantityInput
+          label="Voltage:"
+          range="positive"
+          units={voltageUnits}
+          bind:value={voltage}
+        />
+      {/if}
+    </div>
+  {:else}
+    <div>
+      <label for="motor-select">Motor: </label>
+      <select id="motor-select" bind:value={selectedMotor}>
+        {#each knownMotors as [name, motor]}
+          <option value={motor}>
+            {name}
+          </option>
+        {/each}
+      </select>
+    </div>
+  {/if}
+</div>

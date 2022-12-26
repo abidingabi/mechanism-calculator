@@ -80,7 +80,7 @@
       ),
       makeGraphable(
         "Position Goal (m)",
-        (t) => positionGoal,
+        (_) => positionGoal,
         0,
         time,
         makeYAxis("Position (m)", "left")

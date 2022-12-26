@@ -36,7 +36,7 @@ export function quantity(motor: Motor, quantity: number): Motor {
  * Stores: motor name,
  * free speed (RPM),
  * voltage (V),
- * stall torque (N*m),
+ * stall torque (N⋅m),
  * stall current (A),
  * free current (A)
  */
