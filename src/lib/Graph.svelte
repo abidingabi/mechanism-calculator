@@ -51,6 +51,7 @@
     LineController,
     LineElement,
     LinearScale,
+    LogarithmicScale,
     PointElement,
     Tooltip,
   } from "chart.js";
@@ -61,6 +62,7 @@
     LineController,
     LineElement,
     LinearScale,
+    LogarithmicScale,
     PointElement,
     Tooltip
   );

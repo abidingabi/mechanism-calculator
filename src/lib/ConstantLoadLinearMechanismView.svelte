@@ -34,6 +34,46 @@
     initialPosition,
     initialVelocity
   );
+
+  function iterateUntilNegative(
+    f: (x: number) => number,
+    stepSize: number,
+    initial: number
+  ): number {
+    let current = initial;
+    while (f(current) > 0) {
+      current += stepSize;
+    }
+
+    return current - stepSize;
+  }
+
+  function iterateUntilMinimum(
+    f: (x: number) => number,
+    stepSize: number,
+    initial: number
+  ) {
+    let signedStep = f(initial + stepSize) > f(initial) ? -stepSize : stepSize;
+
+    let currentX = initial;
+    while (f(currentX + signedStep) < f(currentX)) {
+      currentX += signedStep;
+    }
+
+    return currentX;
+  }
+  $: timeToPositionRadius = (g: number) => (r: number) =>
+    timeToPosition(
+      new ConstantLoadLinearMechanism(
+        motor,
+        r,
+        loadForce,
+        mass,
+        initialPosition,
+        initialVelocity
+      ),
+      g
+    );
 </script>
 
 <MotorInput needElectrical={false} bind:value={motor} />
@@ -100,22 +140,30 @@
     graphables={[
       makeGraphable(
         "Time to Goal (s)",
-        (r) =>
-          timeToPosition(
-            new ConstantLoadLinearMechanism(
-              motor,
-              r,
-              loadForce,
-              mass,
-              initialPosition,
-              initialVelocity
-            ),
-            positionGoal
-          ),
-        0.01,
-        1,
+        timeToPositionRadius(positionGoal),
+        iterateUntilNegative(timeToPositionRadius(positionGoal), -0.01, radius),
+        iterateUntilNegative(timeToPositionRadius(positionGoal), 0.01, radius),
         makeYAxis("Time to Goal (s)", "left")
       ),
     ]}
+  />
+
+  <Graph
+    xAxis="Goal (m)"
+    graphables={[
+      makeGraphable(
+        "Radius (m)",
+        (g) =>
+          iterateUntilMinimum(
+            (r) => timeToPositionRadius(g)(r),
+            0.00001,
+            radius
+          ),
+        positionGoal / 10,
+        positionGoal * 3,
+        makeYAxis("Radius Minimizing Time to Goal (m)", "left")
+      ),
+    ]}
+    samples={50}
   />
 {/if}
