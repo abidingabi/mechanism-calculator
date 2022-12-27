@@ -82,9 +82,9 @@ export const massUnits = makeUnitCollection(
 
 export const forceUnits = makeUnitCollection(
   "N",
-  ["N", 1],
   ["kgf", 9.80665],
-  ["lbf", 4.4482216]
+  ["lbf", 4.4482216],
+  ["N", 1],
 );
 
 /*
