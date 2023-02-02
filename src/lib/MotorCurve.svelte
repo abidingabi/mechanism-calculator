@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { currentDraw } from "../motor";
   import type { Motor } from "../motor";
   import Graph from "./Graph.svelte";
   import { makeGraphable, makeYAxis } from "./Graph.svelte";
@@ -10,12 +11,10 @@
 
   $: powerOutput = (speed: number) => torque(speed) * speed;
 
-  $: currentDraw = (speed: number) =>
-    ((motor.freeCurrent - motor.stallCurrent) / motor.freeSpeed) * speed +
-    motor.stallCurrent;
+  $: currentDrawSpeed = (speed: number) => currentDraw(motor, speed);
 
   $: efficiency = (speed: number) =>
-    (100 * powerOutput(speed)) / (currentDraw(speed) * motor.voltage);
+    (100 * powerOutput(speed)) / (currentDrawSpeed(speed) * motor.voltage);
 
   /**
    * Calls a function that expects rad/s with a RPM input.
@@ -40,7 +39,7 @@
     ),
     makeGraphable(
       "Current (A)",
-      inputRPM(currentDraw),
+      inputRPM(currentDrawSpeed),
       0,
       freeSpeedRPM,
       makeYAxis("Current (A), Power (W)")

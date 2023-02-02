@@ -33,6 +33,16 @@ export function quantity(motor: Motor, quantity: number): Motor {
 }
 
 /**
+ * Returns current draw of a motor under a given speed (in rad/s).
+ */
+export function currentDraw(motor: Motor, speed: number): number {
+  const speedFraction = speed / motor.freeSpeed;
+  const currentRange = motor.stallCurrent - motor.freeCurrent;
+
+  return motor.stallCurrent - currentRange * speedFraction;
+}
+
+/**
  * Stores: motor name,
  * free speed (RPM),
  * stall torque (N⋅m),
