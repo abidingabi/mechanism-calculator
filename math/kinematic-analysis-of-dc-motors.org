@@ -261,7 +261,7 @@ export class ConstantLoadAngularMechanism implements PositionMechanism, Velocity
     private readonly initialAngularVelocity: number,
   ) {}
 
- position(t: number) {
+  position(t: number) {
    <<local-variables>>
 
    return <<angular-position>>;
