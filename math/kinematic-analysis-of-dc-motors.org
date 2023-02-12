@@ -19,15 +19,15 @@ V = \frac{\tau}{K_{t}}R_{eq} + \frac{\omega}{K_{v}}
 
 The torque of the motor is equal to the torque accelerating the mechanism plus the load torque:
 \begin{equation}
-\tau=\tau_{accel }+ \tau_{load}
+\tau=\tau_{accel} + \tau_{load}
 \end{equation}
 
 $\tau_{accel}$ is equal to $J\alpha$ where $J$ is moment of inertia and $\alpha$ is angular acceleration.
 
 \begin{equation}
 \begin{aligned}
-V &= \frac{J\alpha+\tau_{load}_{}}{K_{t}}R_{eq} + \frac{\omega}{K_{v}} \\
-V &= \frac{JR_{eq}\alpha+R_{eq}\tau_{load}_{}}{K_{t}} + \frac{\omega}{K_{v}} \\
+V &= \frac{J\alpha+\tau_{load}}{K_{t}}R_{eq} + \frac{\omega}{K_{v}} \\
+V &= \frac{JR_{eq}\alpha+R_{eq}\tau_{load}}{K_{t}} + \frac{\omega}{K_{v}} \\
 V &= \frac{JR_{eq}\alpha}{K_{t}} + \frac{R_{eq}\tau_{load}}{K_{t}}  + \frac{\omega}{K_{v}} \\
 \end{aligned}
 \end{equation}
@@ -42,7 +42,7 @@ Isolating for $\frac{d\omega}{dt}$:
 \begin{aligned}
 V &= \frac{JR_{eq}}{K_{t}}\frac{d\omega}{dt} + \frac{R_{eq}\tau_{load}}{K_{t}}  + \frac{\omega}{K_{v}} \\
 \frac{JR_{eq}}{K_{t}}\frac{d\omega}{dt} &= V - \frac{R_{eq}\tau_{load}}{K_{t}} - \frac{\omega}{K_{v}} \\
-\frac{d\omega}{dt} &= \frac{K_t}{JR_{eq}_{}}V - \frac{1}{J}\tau_{load} - \frac{K_t}{JK_{v}R_{eq}}\omega \\
+\frac{d\omega}{dt} &= \frac{K_t}{JR_{eq}}V - \frac{1}{J}\tau_{load} - \frac{K_t}{JK_{v}R_{eq}}\omega \\
 \end{aligned}
 \end{equation}
 
