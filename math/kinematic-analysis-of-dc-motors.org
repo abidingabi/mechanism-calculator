@@ -2,7 +2,6 @@
 #+author: Abigail
 #+options: toc:nil date:nil
 
-#+property: header-args :session :results drawer :exports results
 * Angular velocity as a function of time
 In order to determine how a mechanism behave, it is first necessary to determine how a motor behaves. The thing that is generally useful for a mechanism is to figure out when it gets to a certain position---for that, it must be known when it gets to a certain position.
 
