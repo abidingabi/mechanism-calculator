@@ -2,7 +2,7 @@
   import { timeToPosition } from "../mechanism";
   import { ConstantLoadLinearMechanism } from "../constant-load-linear";
   import type { Motor } from "../motor";
-  import { currentDraw } from "../motor";
+  import { constants, currentDraw, knownMotors } from "../motor";
   import {
     forceUnits,
     massUnits,
@@ -16,7 +16,7 @@
   import Graph from "./Graph.svelte";
   import { makeGraphable, makeYAxis } from "./Graph.svelte";
 
-  let motor: Motor;
+  let motor: Motor = knownMotors[0][1];
   let radius: number = 1;
   let loadForce: number;
   let mass: number = 1;
@@ -28,7 +28,8 @@
   let mechanism = null;
 
   $: mechanism = new ConstantLoadLinearMechanism(
-    motor,
+    constants(motor),
+    motor.voltage,
     radius,
     loadForce,
     mass,
@@ -66,7 +67,8 @@
   $: timeToPositionRadius = (g: number) => (r: number) =>
     timeToPosition(
       new ConstantLoadLinearMechanism(
-        motor,
+        constants(motor),
+        motor.voltage,
         r,
         loadForce,
         mass,
@@ -108,74 +110,65 @@
   bind:value={positionGoal}
 />
 
-{#if mechanism.equivalentAngularMechanism.motor != undefined}
-  <Graph
-    xAxis="Time (s)"
-    graphables={[
-      makeGraphable(
-        "Position (m)",
-        (t) => mechanism.position(t),
-        0,
-        time,
-        makeYAxis("Position (m)", "left")
-      ),
-      makeGraphable(
-        "Position Goal (m)",
-        (_) => positionGoal,
-        0,
-        time,
-        makeYAxis("Position (m)", "left")
-      ),
-      makeGraphable(
-        "Velocity (m/s)",
-        (t) => mechanism.velocity(t),
-        0,
-        time,
-        makeYAxis("Velocity (m/s)", "left")
-      ),
-      makeGraphable(
-        "Current (A)",
-        (t) =>
-          currentDraw(
-            mechanism.equivalentAngularMechanism.motor,
-            mechanism.equivalentAngularMechanism.velocity(t)
-          ),
-        0,
-        time,
-        makeYAxis("Current (A)", "right")
-      ),
-    ]}
-  />
+<Graph
+  xAxis="Time (s)"
+  graphables={[
+    makeGraphable(
+      "Position (m)",
+      (t) => mechanism.position(t),
+      0,
+      time,
+      makeYAxis("Position (m)", "left")
+    ),
+    makeGraphable(
+      "Position Goal (m)",
+      (_) => positionGoal,
+      0,
+      time,
+      makeYAxis("Position (m)", "left")
+    ),
+    makeGraphable(
+      "Velocity (m/s)",
+      (t) => mechanism.velocity(t),
+      0,
+      time,
+      makeYAxis("Velocity (m/s)", "left")
+    ),
+    makeGraphable(
+      "Current (A)",
+      (t) =>
+        currentDraw(motor, mechanism.equivalentAngularMechanism.velocity(t)),
+      0,
+      time,
+      makeYAxis("Current (A)", "right")
+    ),
+  ]}
+/>
 
-  <Graph
-    xAxis="Radius (m)"
-    graphables={[
-      makeGraphable(
-        "Time to Goal (s)",
-        timeToPositionRadius(positionGoal),
-        iterateUntilNegative(timeToPositionRadius(positionGoal), -0.01, radius),
-        iterateUntilNegative(timeToPositionRadius(positionGoal), 0.01, radius),
-        makeYAxis("Time to Goal (s)", "left")
-      ),
-    ]}
-  />
+<Graph
+  xAxis="Radius (m)"
+  graphables={[
+    makeGraphable(
+      "Time to Goal (s)",
+      timeToPositionRadius(positionGoal),
+      iterateUntilNegative(timeToPositionRadius(positionGoal), -0.01, radius),
+      iterateUntilNegative(timeToPositionRadius(positionGoal), 0.01, radius),
+      makeYAxis("Time to Goal (s)", "left")
+    ),
+  ]}
+/>
 
-  <Graph
-    xAxis="Goal (m)"
-    graphables={[
-      makeGraphable(
-        "Radius (m)",
-        (g) =>
-          iterateUntilMinimum(
-            (r) => timeToPositionRadius(g)(r),
-            0.00001,
-            radius
-          ),
-        positionGoal / 10,
-        positionGoal * 3,
-        makeYAxis("Radius Minimizing Time to Goal (m)", "left")
-      ),
-    ]}
-    samples={50}
-  />
-{/if}
+<Graph
+  xAxis="Goal (m)"
+  graphables={[
+    makeGraphable(
+      "Radius (m)",
+      (g) =>
+        iterateUntilMinimum((r) => timeToPositionRadius(g)(r), 0.00001, radius),
+      positionGoal / 10,
+      positionGoal * 3,
+      makeYAxis("Radius Minimizing Time to Goal (m)", "left")
+    ),
+  ]}
+  samples={50}
+/>

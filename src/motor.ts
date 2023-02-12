@@ -32,6 +32,20 @@ export function quantity(motor: Motor, quantity: number): Motor {
   };
 }
 
+export interface MotorConstants {
+  readonly kT: number;
+  readonly kV: number;
+  readonly resistance: number;
+}
+
+export function constants(motor: Motor): MotorConstants {
+  return {
+    kT: motor.stallTorque / motor.stallCurrent,
+    kV: motor.freeSpeed / motor.voltage,
+    resistance: motor.voltage / motor.stallCurrent,
+  };
+}
+
 /**
  * Returns current draw of a motor under a given speed (in rad/s).
  */

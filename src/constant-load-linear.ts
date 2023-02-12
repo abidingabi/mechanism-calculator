@@ -1,6 +1,6 @@
 import type { PositionMechanism, VelocityMechanism } from "./mechanism";
-import type { Motor } from "./motor";
-import { ConstantLoadAngularMechanism } from "./generated/constant-load-angular";
+import type { MotorConstants } from "./motor";
+import { ConstantLoadAngularMechanism } from "./constant-load-angular";
 
 export class ConstantLoadLinearMechanism
   implements PositionMechanism, VelocityMechanism
@@ -8,7 +8,8 @@ export class ConstantLoadLinearMechanism
   private equivalentAngularMechanism: ConstantLoadAngularMechanism;
 
   constructor(
-    motor: Motor,
+    motorConstants: MotorConstants,
+    private readonly voltage: number,
     private readonly radius: number,
     loadForce: number,
     mass: number,
@@ -16,7 +17,8 @@ export class ConstantLoadLinearMechanism
     initialVelocity: number
   ) {
     this.equivalentAngularMechanism = new ConstantLoadAngularMechanism(
-      motor,
+      motorConstants,
+      voltage,
       radius * loadForce,
       mass * radius * radius,
       initialPosition / radius,
