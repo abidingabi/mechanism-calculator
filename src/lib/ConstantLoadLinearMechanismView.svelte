@@ -2,7 +2,7 @@
   import { timeToPosition } from "../mechanism";
   import { ConstantLoadLinearMechanism } from "../constant-load-linear";
   import type { Motor } from "../motor";
-  import { constants, currentDraw, knownMotors } from "../motor";
+  import { constants, knownMotors } from "../motor";
   import {
     forceUnits,
     massUnits,
@@ -133,14 +133,6 @@
       0,
       time,
       makeYAxis("Velocity (m/s)", "left")
-    ),
-    makeGraphable(
-      "Current (A)",
-      (t) =>
-        currentDraw(motor, mechanism.equivalentAngularMechanism.velocity(t)),
-      0,
-      time,
-      makeYAxis("Current (A)", "right")
     ),
   ]}
 />
