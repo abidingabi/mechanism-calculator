@@ -114,16 +114,12 @@ export const torqueUnits = makeUnitCollection(
  */
 export const currentUnits = makeUnitCollection(
   "A",
-  ["A", 1],
-  // (Middle C⋅coulomb)
-  ["C₄⋅C", 220 * Math.pow(2, 1 / 4)]
+  ["A", 1]
 );
 
 export const voltageUnits = makeUnitCollection(
   "V",
-  ["V", 1],
-  // calorie / coulomb
-  ["cal/C", 4.184]
+  ["V", 1]
 );
 
 /*
