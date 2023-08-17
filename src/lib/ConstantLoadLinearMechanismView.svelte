@@ -110,57 +110,59 @@
   bind:value={positionGoal}
 />
 
-<Graph
-  xAxis="Time (s)"
-  graphables={[
-    makeGraphable(
-      "Position (m)",
-      (t) => mechanism.position(t),
-      0,
-      time,
-      makeYAxis("Position (m)", "left")
-    ),
-    makeGraphable(
-      "Position Goal (m)",
-      (_) => positionGoal,
-      0,
-      time,
-      makeYAxis("Position (m)", "left")
-    ),
-    makeGraphable(
-      "Velocity (m/s)",
-      (t) => mechanism.velocity(t),
-      0,
-      time,
-      makeYAxis("Velocity (m/s)", "left")
-    ),
-  ]}
-/>
+<div style="overflow: hidden">
+  <Graph
+    xAxis="Time (s)"
+    graphables={[
+      makeGraphable(
+        "Position (m)",
+        (t) => mechanism.position(t),
+        0,
+        time,
+        makeYAxis("Position (m)", "left")
+      ),
+      makeGraphable(
+        "Position Goal (m)",
+        (_) => positionGoal,
+        0,
+        time,
+        makeYAxis("Position (m)", "left")
+      ),
+      makeGraphable(
+        "Velocity (m/s)",
+        (t) => mechanism.velocity(t),
+        0,
+        time,
+        makeYAxis("Velocity (m/s)", "left")
+      ),
+    ]}
+  />
+</div>
 
-<Graph
-  xAxis="Radius (m)"
-  graphables={[
-    makeGraphable(
-      "Time to Goal (s)",
-      timeToPositionRadius(positionGoal),
-      iterateUntilNegative(timeToPositionRadius(positionGoal), -0.01, radius),
-      iterateUntilNegative(timeToPositionRadius(positionGoal), 0.01, radius),
-      makeYAxis("Time to Goal (s)", "left")
-    ),
-  ]}
-/>
+<!-- <Graph
+       xAxis="Radius (m)"
+       graphables={[
+                  makeGraphable(
+                  "Time to Goal (s)",
+                  timeToPositionRadius(positionGoal),
+                  iterateUntilNegative(timeToPositionRadius(positionGoal), -0.01, radius),
+                  iterateUntilNegative(timeToPositionRadius(positionGoal), 0.01, radius),
+                  makeYAxis("Time to Goal (s)", "left")
+                  ),
+                  ]}
+       /> -->
 
-<Graph
-  xAxis="Goal (m)"
-  graphables={[
-    makeGraphable(
-      "Radius (m)",
-      (g) =>
-        iterateUntilMinimum((r) => timeToPositionRadius(g)(r), 0.00001, radius),
-      positionGoal / 10,
-      positionGoal * 3,
-      makeYAxis("Radius Minimizing Time to Goal (m)", "left")
-    ),
-  ]}
-  samples={50}
-/>
+<!-- <Graph
+     xAxis="Goal (m)"
+     graphables={[
+                makeGraphable(
+                "Radius (m)",
+                (g) =>
+                iterateUntilMinimum((r) => timeToPositionRadius(g)(r), 0.00001, radius),
+                positionGoal / 10,
+                positionGoal * 3,
+                makeYAxis("Radius Minimizing Time to Goal (m)", "left")
+                ),
+                ]}
+     samples={50}
+     /> -->

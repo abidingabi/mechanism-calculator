@@ -50,8 +50,8 @@ function makeUnitCollection(
  */
 export const positionUnits = makeUnitCollection(
   "m",
-  ["m", 1],
   ["mm", 0.001],
+  ["m", 1],
   ["cm", 0.01],
   ["in", 0.0254],
   ["feet", 0.3048]
@@ -112,15 +112,9 @@ export const torqueUnits = makeUnitCollection(
  * Alternative units from the wonderful CCC system.
  * See https://www.youtube.com/watch?v=KmfdeWd0RMk for more.
  */
-export const currentUnits = makeUnitCollection(
-  "A",
-  ["A", 1]
-);
+export const currentUnits = makeUnitCollection("A", ["A", 1]);
 
-export const voltageUnits = makeUnitCollection(
-  "V",
-  ["V", 1]
-);
+export const voltageUnits = makeUnitCollection("V", ["V", 1]);
 
 /*
  * Misc. units

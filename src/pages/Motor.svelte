@@ -24,7 +24,6 @@
 
 <style>
   #motor {
-    display: flex;
-    flex-wrap: wrap;
+    max-width: 75%;
   }
 </style>
